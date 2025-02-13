@@ -8,8 +8,9 @@ import { Product, SortKey, SortOrder } from "../../types/product.types";
 import { sortProducts } from "../../utils/productUtils";
 import { styles } from "../../components/ProductList/styles";
 import { useProducts } from "../../hooks/useProducts";
+import { Link } from "expo-router";
 
-export const ProductList: React.FC = () => {
+const ProductList: React.FC = () => {
   const { products, loading, error, restock, unload, refreshProducts } =
     useProducts();
   const [searchQuery, setSearchQuery] = useState("");
@@ -80,7 +81,6 @@ export const ProductList: React.FC = () => {
           onSort={handleSort}
         />
       </View>
-
       <FlatList
         data={filteredAndSortedProducts()}
         renderItem={({ item }) => (
@@ -112,3 +112,5 @@ export const ProductList: React.FC = () => {
     </View>
   );
 };
+
+export default ProductList;
