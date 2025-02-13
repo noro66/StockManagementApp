@@ -20,7 +20,7 @@ const TabIcon: React.FC<TabIconProps> = ({ icon, color, label, focused }) => {
 
 const TabsLayout: React.FC = () => {
   return (
-    <Tabs>
+    <Tabs screenOptions={{ headerShown: false }}>
       <Tabs.Screen
         name="productList"
         options={{
@@ -42,6 +42,19 @@ const TabsLayout: React.FC = () => {
               icon="person"
               color={color}
               label="Profile"
+              focused={focused}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="AddProduct"
+        options={{
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon
+              icon="add"
+              color={color}
+              label="AddProduct"
               focused={focused}
             />
           ),
