@@ -49,7 +49,7 @@ const ProfileScreen = () => {
       const currentUser = await AuthService.getCurrentUser();
       console.log("Current user after logout:", currentUser);
       setUser(null);
-      router.replace("/")
+      router.replace("/");
     } catch (error) {
       console.error("Error during logout:", error);
     }

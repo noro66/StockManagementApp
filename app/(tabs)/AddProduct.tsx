@@ -3,23 +3,32 @@ import {
   View,
   Text,
   TextInput,
-  Button,
+  TouchableOpacity,
   Alert,
   Image,
   ScrollView,
   ActivityIndicator,
+  StyleSheet,
+  SafeAreaView,
+  KeyboardAvoidingView,
+  Platform,
+  Dimensions,
 } from "react-native";
 import { productService } from "../../services/productService";
 import { Product } from "../../types/product.types";
+import { router } from "expo-router";
 
-const AddProductScreen = ({ navigation }) => {
+const { width } = Dimensions.get("window");
+const DEFAULT_IMAGE = "https://via.placeholder.com/150";
+
+const AddProductScreen = () => {
   const [name, setName] = useState("");
   const [type, setType] = useState("");
-  const [barcode, setBarcode] = useState();
-  const [price, setPrice] = useState();
-  const [solde, setSolde] = useState();
+  const [barcode, setBarcode] = useState("");
+  const [price, setPrice] = useState("");
+  const [solde, setSolde] = useState("");
   const [supplier, setSupplier] = useState("");
-  const [image, setImage] = useState("");
+  const [image, setImage] = useState(DEFAULT_IMAGE);
   const [loading, setLoading] = useState(false);
 
   const handleAddProduct = async () => {
@@ -28,121 +37,194 @@ const AddProductScreen = ({ navigation }) => {
       return;
     }
 
-    const newProduct: Partial<Product> = {
+    const newProduct = {
       name,
       type,
       barcode,
       price: parseFloat(price),
       solde: solde ? parseFloat(solde) : undefined,
       supplier,
-      image: image || "https://via.placeholder.com/150",
-      stocks: [],
+      image: image || DEFAULT_IMAGE,
       editedBy: [],
+      stocks: [],
     };
 
-    setLoading(true);
-    const response = await productService.addProduct(newProduct);
+    try {
+      setLoading(true);
+      const response = await productService.addProduct(newProduct);
 
-    if (response.error) {
-      Alert.alert("Error", response.error);
-    } else {
-      Alert.alert("Success", "Product added successfully!");
-      navigation.goBack();
+      if (response && !response.error) {
+        Alert.alert("Success", "Product added successfully!");
+        router.replace("/");
+      } else {
+        const errorMessage =
+          response?.error || "Failed to add product. Please try again.";
+        Alert.alert("Error", errorMessage);
+      }
+    } catch (error) {
+      console.error("Add product error:", error);
+      Alert.alert(
+        "Error",
+        "An unexpected error occurred. The product might have been created. Please check before trying again."
+      );
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
+  const renderInput = (placeholder, value, setter, props = {}) => (
+    <View style={styles.inputContainer}>
+      <Text style={styles.inputLabel}>{placeholder}</Text>
+      <TextInput
+        placeholder={`Enter ${placeholder.toLowerCase()}`}
+        value={value}
+        onChangeText={setter}
+        style={styles.input}
+        placeholderTextColor="#999"
+        {...props}
+      />
+    </View>
+  );
+
   return (
-    <ScrollView style={{ padding: 15 }}>
-      <View
-        style={{
-          flex: 1,
-          marginTop: "100",
-        }}
+    <SafeAreaView style={styles.container}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.container}
       >
-        <Text
-          style={{
-            fontSize: 22,
-            fontWeight: "bold",
-            marginBottom: 10,
-          }}
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
         >
-          Add Product
-        </Text>
-        <TextInput
-          placeholder="Barcode"
-          value={barcode}
-          onChangeText={setBarcode}
-          keyboardType="numeric"
-          style={styles.input}
-        />
-        <TextInput
-          placeholder="Product Name"
-          value={name}
-          onChangeText={setName}
-          style={styles.input}
-        />
-        <TextInput
-          placeholder="Product Type"
-          value={type}
-          onChangeText={setType}
-          style={styles.input}
-        />
+          <View style={styles.header}>
+            <Text style={styles.title}>Add Product</Text>
+            <Text style={styles.subtitle}>
+              Fill in the product details below
+            </Text>
+          </View>
 
-        <TextInput
-          placeholder="Price"
-          value={price}
-          onChangeText={setPrice}
-          keyboardType="numeric"
-          style={styles.input}
-        />
-        <TextInput
-          placeholder="Discounted Price (Solde)"
-          value={solde}
-          onChangeText={setSolde}
-          keyboardType="numeric"
-          style={styles.input}
-        />
-        <TextInput
-          placeholder="Supplier"
-          value={supplier}
-          onChangeText={setSupplier}
-          style={styles.input}
-        />
-        <TextInput
-          placeholder="Image URL"
-          value={image}
-          onChangeText={setImage}
-          style={styles.input}
-        />
+          <View style={styles.formContainer}>
+            {renderInput("Barcode", barcode, setBarcode, {
+              keyboardType: "numeric",
+            })}
+            {renderInput("Product Name", name, setName)}
+            {renderInput("Product Type", type, setType)}
+            {renderInput("Price", price, setPrice, { keyboardType: "numeric" })}
+            {renderInput("Discounted Price", solde, setSolde, {
+              keyboardType: "numeric",
+            })}
+            {renderInput("Supplier", supplier, setSupplier)}
+            {renderInput("Image URL", image, setImage)}
 
-        {image ? (
-          <Image
-            source={{ uri: image }}
-            style={{ width: "100%", height: 150, marginBottom: 10 }}
-          />
-        ) : null}
+            {image && (
+              <View style={styles.imageContainer}>
+                <Image
+                  source={{ uri: image }}
+                  style={styles.image}
+                  onError={() => setImage(DEFAULT_IMAGE)}
+                />
+              </View>
+            )}
 
-        {loading ? (
-          <ActivityIndicator size="large" color="#007AFF" />
-        ) : (
-          <Button title="Add Product" onPress={handleAddProduct} />
-        )}
-      </View>
-    </ScrollView>
+            <TouchableOpacity
+              style={[styles.button, loading && styles.buttonDisabled]}
+              onPress={handleAddProduct}
+              disabled={loading}
+            >
+              {loading ? (
+                <ActivityIndicator color="#FFFFFF" />
+              ) : (
+                <Text style={styles.buttonText}>Add Product</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 
-const styles = {
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#F5F5F5",
+  },
+  scrollContent: {
+    padding: 20,
+    paddingTop: Platform.OS === "android" ? 40 : 20,
+  },
+  header: {
+    marginBottom: 30,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: "bold",
+    color: "#333",
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: "#666",
+  },
+  formContainer: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 15,
+    padding: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  inputContainer: {
+    marginBottom: 20,
+  },
+  inputLabel: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#333",
+    marginBottom: 8,
+  },
   input: {
     height: 50,
-    borderColor: "#ccc",
-    borderWidth: 1,
-    borderRadius: 8,
-    marginBottom: 10,
-    paddingHorizontal: 10,
+    backgroundColor: "#F8F8F8",
+    borderRadius: 10,
+    paddingHorizontal: 15,
     fontSize: 16,
+    color: "#333",
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
   },
-};
+  imageContainer: {
+    marginVertical: 20,
+    borderRadius: 10,
+    overflow: "hidden",
+    backgroundColor: "#F8F8F8",
+  },
+  image: {
+    width: "100%",
+    height: width * 0.5,
+    resizeMode: "cover",
+  },
+  button: {
+    backgroundColor: "#007AFF",
+    height: 50,
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 10,
+  },
+  buttonDisabled: {
+    backgroundColor: "#99C4FF",
+  },
+  buttonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+});
 
 export default AddProductScreen;
