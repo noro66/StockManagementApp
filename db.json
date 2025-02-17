@@ -13,7 +13,7 @@
         {
           "id": 1999,
           "name": "Gueliz B2",
-          "quantity": 0,
+          "quantity": 21,
           "localisation": {
             "city": "Marrakesh",
             "latitude": 31.628674,
@@ -23,7 +23,7 @@
         {
           "id": 2991,
           "name": "Lazari H2",
-          "quantity": 0,
+          "quantity": 24,
           "localisation": {
             "city": "Oujda",
             "latitude": 34.689404,
@@ -35,18 +35,6 @@
         {
           "warehousemanId": 1333,
           "at": "2025-02-02"
-        },
-        {
-          "warehousemanId": 1333,
-          "at": "2025-02-17T04:28:01.880Z"
-        },
-        {
-          "warehousemanId": 1333,
-          "at": "2025-02-17T04:28:18.605Z"
-        },
-        {
-          "warehousemanId": 1333,
-          "at": "2025-02-17T04:51:28.335Z"
         }
       ]
     },
@@ -62,7 +50,7 @@
         {
           "id": 1999,
           "name": "Gueliz B2",
-          "quantity": 0,
+          "quantity": 20,
           "localisation": {
             "city": "Marrakesh",
             "latitude": 31.628674,
@@ -72,7 +60,7 @@
         {
           "id": 2991,
           "name": "Lazari H2",
-          "quantity": 0,
+          "quantity": 5,
           "localisation": {
             "city": "Oujda",
             "latitude": 34.689404,
@@ -84,26 +72,6 @@
         {
           "warehousemanId": 1444,
           "at": "2025-02-02"
-        },
-        {
-          "warehousemanId": 1333,
-          "at": "2/17/2025"
-        },
-        {
-          "warehousemanId": 1333,
-          "at": "2025-02-17T04:27:12.663Z"
-        },
-        {
-          "warehousemanId": 1333,
-          "at": "2025-02-17T04:27:16.729Z"
-        },
-        {
-          "warehousemanId": 1333,
-          "at": "2025-02-17T04:27:21.511Z"
-        },
-        {
-          "warehousemanId": 1333,
-          "at": "2025-02-17T04:51:16.259Z"
         }
       ]
     },
@@ -115,34 +83,47 @@
       "price": 11000,
       "supplier": "HP",
       "image": "https://technoplace.ma/11482-large_default/hp-omen-17-i7-7700hq-173-16gb-2tb-geforce-gtx-10.jpg",
-      "stocks": [
-        {
-          "id": 1999,
-          "name": "Amine Boutaleb",
-          "quantity": 200,
-          "localisation": {
-            "city": "Oujda",
-            "latitude": 0,
-            "longitude": 0
-          }
-        }
-      ],
+      "stocks": [],
       "editedBy": [
         {
           "warehousemanId": 1444,
           "at": "2025-02-02"
+        }
+      ]
+    },
+    {
+      "id": "4c01",
+      "name": "Ug",
+      "type": "Ygsj",
+      "barcode": "6888684",
+      "price": 680,
+      "solde": 680,
+      "supplier": "Jvsb",
+      "image": "https://via.placeholder.com/150",
+      "editedBy": [
+        {
+          "warehousemanId": 1333,
+          "at": "2025-02-17T05:05:37.181Z"
         },
         {
           "warehousemanId": 1333,
-          "at": "2/17/2025"
+          "at": "2025-02-17T05:05:41.730Z"
         },
         {
           "warehousemanId": 1333,
-          "at": "2025-02-17T04:51:35.608Z"
-        },
+          "at": "2025-02-17T05:05:47.663Z"
+        }
+      ],
+      "stocks": [
         {
-          "warehousemanId": 1333,
-          "at": "2025-02-17T04:51:42.266Z"
+          "id": 1999,
+          "name": "Gueliz B2",
+          "quantity": 0,
+          "localisation": {
+            "city": "Marrakesh",
+            "latitude": 31.628674,
+            "longitude": -7.992047
+          }
         }
       ]
     }

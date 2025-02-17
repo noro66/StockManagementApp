@@ -87,7 +87,7 @@ class ProductService {
             stock.quantity -= quantityToReduce;
             quantityBuff -= quantityToReduce;
           }
-          stockIndex++; // Move to the next stock
+          stockIndex++;
         }
         // Check if the entire quantity was unloaded
         if (quantityBuff > 0) {
@@ -260,7 +260,16 @@ class ProductService {
         ...product,
         id,
         editedBy: [],
-        stocks: [],
+        stocks: [{
+          "id": 1999,
+          "name": "Gueliz B2",
+          "quantity": 0,
+          "localisation": {
+            "city": "Marrakesh",
+            "latitude": 31.628674,
+            "longitude": -7.992047
+          }
+        }],
       };
 
       const response = await api.post<Product>("/products", newProduct);
