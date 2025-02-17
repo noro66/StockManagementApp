@@ -17,7 +17,8 @@ import {
 import { productService } from "@/services/productService";
 import { Product } from "../../types/product.types";
 import { router } from "expo-router";
-import ProductScanner from "@/components/ProductList/ProductScanner";  // Ensure the correct import path
+import ProductScanner from "@/components/ProductList/ProductScanner";
+import {Ionicons} from "@expo/vector-icons";  // Ensure the correct import path
 
 const { width } = Dimensions.get("window");
 const DEFAULT_IMAGE = "https://via.placeholder.com/150";
@@ -97,14 +98,17 @@ const AddProductScreen = () => {
   const renderInput = (placeholder, value, setter, props = {}) => (
       <View style={styles.inputContainer}>
         <Text style={styles.inputLabel}>{placeholder}</Text>
-        <TextInput
-            placeholder={`Enter ${placeholder.toLowerCase()}`}
-            value={value}
-            onChangeText={setter}
-            style={styles.input}
-            placeholderTextColor="#999"
-            {...props}
-        />
+        <View style={styles.inputWrapper}>
+          <TextInput
+              placeholder={`Enter ${placeholder.toLowerCase()}`}
+              value={value}
+              onChangeText={setter}
+              style={styles.input}
+              placeholderTextColor="#999"
+              {...props}
+          />
+          {props.rightIcon && props.rightIcon} {/* Add this line */}
+        </View>
       </View>
   );
 
@@ -128,12 +132,15 @@ const AddProductScreen = () => {
             <View style={styles.formContainer}>
               {renderInput("Barcode", barcode, setBarcode, {
                 keyboardType: "numeric",
+                rightIcon: (
+                    <TouchableOpacity onPress={() => setShowScanner(true)} style={styles.iconButton}>
+                      <Ionicons name="camera" size={24} color="#999" />
+                    </TouchableOpacity>
+                ),
               })}
-
-              {/* Trigger scanner modal */}
-              <TouchableOpacity onPress={() => setShowScanner(true)} style={styles.scanButton}>
-                <Text style={styles.scanButtonText}>Scan Barcode</Text>
-              </TouchableOpacity>
+              {/*<TouchableOpacity onPress={() => setShowScanner(true)} style={styles.scanButton}>*/}
+              {/*  <Text style={styles.scanButtonText}>Scan Barcode</Text>*/}
+              {/*</TouchableOpacity>*/}
 
               {renderInput("Product Name", name, setName)}
               {renderInput("Product Type", type, setType)}
@@ -270,6 +277,37 @@ const styles = StyleSheet.create({
   scanButtonText: {
     color: "#FFFFFF",
     fontSize: 16,
+  },
+  inputContainer: {
+    marginBottom: 20,
+  },
+  inputLabel: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#333",
+    marginBottom: 8,
+  },
+  inputWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#F8F8F8",
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
+    paddingHorizontal: 15,
+  },
+  input: {
+    flex: 1,
+    height: 50,
+    fontSize: 16,
+    color: "#333",
+  },
+  iconButton: {
+    padding: 10,
+  },
+  scanButtonText: {
+    fontSize: 16,
+    color: "#007AFF",
   },
 });
 
