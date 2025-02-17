@@ -133,7 +133,7 @@ const ProductList: React.FC = () => {
         visible={isRestockModalVisible}
         amount={Amount}
         onChangeAmount={setAmount}
-        onConfirm={()=> mode  === "restock" ? handleRestock : handleUnload}
+        onConfirm={()=> mode  === "restock" ? handleRestock() : handleUnload()}
         onCancel={() => {
           setRestockModalVisible(false);
           setAmount("");
