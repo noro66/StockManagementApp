@@ -39,7 +39,23 @@ class ProductService {
       };
     }
   }
-
+async  getProductByBarcode(barcode: string): Promise<ApiResponse<Product>> {
+    try {
+      // console.log(barcode)
+      const response = await api.get<Product>(`/products`, {
+        params: {barcode}
+      });
+      console.log(response.data);
+      return { data: response.data };
+    } catch (error) {
+      console.error(`Error fetching product ${barcode}:`, error);
+      return {
+        data: {} as Product,
+        error:
+            error instanceof Error ? error.message : "Failed to fetch product",
+      };
+    }
+  }
   /**
    * Fetch a single product by ID
    */
@@ -342,5 +358,6 @@ class ProductService {
     }
   }
 }
+
 
 export const productService = ProductService.getInstance();

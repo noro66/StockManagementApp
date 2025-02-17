@@ -90,6 +90,29 @@
           "at": "2025-02-02"
         }
       ]
+    },
+    {
+      "id": "6ff5",
+      "name": "Hxcjv",
+      "type": "Jdcg",
+      "barcode": "6111128000088",
+      "price": 600,
+      "solde": 80,
+      "supplier": "Hcf",
+      "image": "https://via.placeholder.com/150",
+      "editedBy": [],
+      "stocks": [
+        {
+          "id": 1999,
+          "name": "Gueliz B2",
+          "quantity": 0,
+          "localisation": {
+            "city": "Marrakesh",
+            "latitude": 31.628674,
+            "longitude": -7.992047
+          }
+        }
+      ]
     }
   ],
   "warehousemans": [
