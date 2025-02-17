@@ -72,7 +72,18 @@ class ProductService {
       }
 
       const currentProduct = productResponse.data[0];
-      let updatedStocks = [...(currentProduct.stocks || [])];
+      let updatedStocks = Array.isArray(currentProduct.stocks) && currentProduct.stocks.length > 0
+          ? [...currentProduct.stocks]
+          : [{
+            id: 1999,
+            name: "Gueliz B2",
+            quantity: 0,
+            localisation: {
+              city: "Marrakesh",
+              latitude: 31.628674,
+              longitude: -7.992047,
+            },
+          }];
 
       // Step 2: Find the stock to update
       let stockIndex = 0 //updatedStocks.findIndex((stock) => stock.id === stockId);

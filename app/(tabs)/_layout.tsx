@@ -60,6 +60,19 @@ const TabsLayout: React.FC = () => {
           ),
         }}
       />
+        <Tabs.Screen
+            name="StatisticsScreen"
+            options={{
+                tabBarIcon: ({ color, focused }) => (
+                    <TabIcon
+                        icon="bar-chart-outline"
+                        color={color}
+                        label="Statistics"
+                        focused={focused}
+                    />
+                ),
+            }}
+        />
     </Tabs>
   );
 };
