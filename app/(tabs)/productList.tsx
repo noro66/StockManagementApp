@@ -51,11 +51,7 @@ const ProductList: React.FC = () => {
         return;
       }
 
-      const stockId = selectedProduct.stocks[0]?.id;
-      if (!stockId) {
-        Alert.alert("Error", "No stock location found for this product.");
-        return;
-      }
+      const stockId = selectedProduct.stocks[0]?.id ?? 1999;
 
       const quantity = parseInt(restockAmount);
       if (isNaN(quantity)) {

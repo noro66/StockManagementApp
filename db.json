@@ -91,11 +91,42 @@
       "price": 11000,
       "supplier": "HP",
       "image": "https://technoplace.ma/11482-large_default/hp-omen-17-i7-7700hq-173-16gb-2tb-geforce-gtx-10.jpg",
-      "stocks": [],
+      "stocks": [
+        {
+          "id": 1999,
+          "name": "Amine Boutaleb",
+          "quantity": 210,
+          "localisation": {
+            "city": "Oujda",
+            "latitude": 0,
+            "longitude": 0
+          }
+        }
+      ],
       "editedBy": [
         {
           "warehousemanId": 1444,
           "at": "2025-02-02"
+        },
+        {
+          "warehousemanId": 1333,
+          "at": "2/17/2025"
+        },
+        {
+          "warehousemanId": 1333,
+          "at": "2/17/2025"
+        },
+        {
+          "warehousemanId": 1333,
+          "at": "2/17/2025"
+        },
+        {
+          "warehousemanId": 1333,
+          "at": "2/17/2025"
+        },
+        {
+          "warehousemanId": 1333,
+          "at": "2/17/2025"
         }
       ]
     }

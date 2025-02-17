@@ -80,7 +80,16 @@ class ProductService {
       console.log("currentProduct:", JSON.stringify(currentProduct, null, 2),);
 
       // Step 2: Update the stock quantity
-      let updatedStocks = [...(currentProduct.stocks || [])];
+      let updatedStocks = [...(currentProduct.stocks || [{
+        "id": 1999,
+        "name": "Gueliz B2",
+        "quantity": 0,
+        "localisation": {
+          "city": "Marrakesh",
+          "latitude": 31.628674,
+          "longitude": -7.992047
+        }
+      }])];
       const stockIndex = updatedStocks.findIndex(
           (stock) => stock.id === stockId
       );
