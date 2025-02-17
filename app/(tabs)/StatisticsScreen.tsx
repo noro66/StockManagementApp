@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Card } from '@rneui/themed';
@@ -40,8 +40,8 @@ const StatCard: React.FC<StatCardProps> = ({ icon, title, value, color }) => (
 const ProductList: React.FC<{ title: string; products: Product[] }> = ({ title, products }) => (
     <Card containerStyle={styles.largeCard}>
         <Text style={styles.sectionTitle}>{title}</Text>
-        {products.length > 0 ? (
-            products.map((product) => (
+        {products?.length > 0 ? (
+            products?.map((product) => (
                 <Text key={product.id} style={styles.listItem}>
                     {product.name} - {getTotalQuantity(product)}
                 </Text>
@@ -53,42 +53,45 @@ const ProductList: React.FC<{ title: string; products: Product[] }> = ({ title, 
 );
 
 const StatisticsScreen: React.FC = () => {
-    const { products } = useProducts();
+    const { products , refreshProducts} = useProducts();
+    const [statistics,setStatistics]  = useState({});
 
-    const statistics = useMemo<Statistics>(() => {
-        if (!products?.length) {
-            return {
-                totalProducts: 0,
-                outOfStock: 0,
-                totalStockValue: 0,
-                mostAddedProducts: [],
-                mostRemovedProducts: [],
-            };
-        }
+    useEffect(() => {
+        const getStaits  =  async () => {
+            if (!products?.length) {
 
-        const outOfStock = products.filter(product => getTotalQuantity(product) === 0).length;
-        const totalStockValue = products.reduce(
-            (sum, product) =>
-                sum + (product.stocks.reduce((stockSum, stock) => stockSum + stock.quantity, 0) * product.price),
-            0
-        );
+                return {
+                    totalProducts: 0,
+                    outOfStock: 0,
+                    totalStockValue: 0,
+                    mostAddedProducts: [],
+                    mostRemovedProducts: [],
+                };
+            }
 
-
-        return {
-            totalProducts: products.length,
-            outOfStock,
-            totalStockValue,
-            mostAddedProducts: [...products]
-                .sort((a, b) => b.quantity - a.quantity)
-                .slice(0, 3),
-            mostRemovedProducts: [...products]
-                .sort((a, b) => a.quantity - b.quantity)
-                .slice(0, 3),
+            const outOfStock = products.filter(product => getTotalQuantity(product) === 0).length;
+            const totalStockValue = products.reduce(
+                (sum, product) =>
+                    sum + (product.stocks.reduce((stockSum, stock) => stockSum + stock.quantity, 0) * product.price),
+                0
+            );
+            setStatistics({
+                totalProducts: products.length,
+                outOfStock,
+                totalStockValue,
+                mostAddedProducts: [...products]
+                    .sort((a, b) => b.quantity - a.quantity)
+                    .slice(0, 3),
+                mostRemovedProducts: [...products]
+                    .sort((a, b) => a.quantity - b.quantity)
+                    .slice(0, 3),
+            });
         };
+        refreshProducts().then(_ =>  getStaits());
     }, [products]);
 
     const formatCurrency = (value: number): string =>
-        `$${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        `$${value?.toLocaleString()}`;
 
     return (
         <SafeAreaView style={styles.container}>
@@ -100,7 +103,7 @@ const StatisticsScreen: React.FC = () => {
                         <StatCard
                             icon="cube-outline"
                             title="Total Products"
-                            value={statistics.totalProducts}
+                            value={statistics?.totalProducts}
                             color="#007AFF"
                         />
                     </Card>
@@ -109,7 +112,7 @@ const StatisticsScreen: React.FC = () => {
                         <StatCard
                             icon="alert-circle-outline"
                             title="Out of Stock"
-                            value={statistics.outOfStock}
+                            value={statistics?.outOfStock}
                             color="#FF3B30"
                         />
                     </Card>
@@ -119,19 +122,19 @@ const StatisticsScreen: React.FC = () => {
                     <StatCard
                         icon="cash-outline"
                         title="Total Stock Value"
-                        value={formatCurrency(statistics.totalStockValue)}
+                        value={formatCurrency(statistics?.totalStockValue)}
                         color="#34C759"
                     />
                 </Card>
 
                 <ProductList
                     title="Most Added Products"
-                    products={statistics.mostAddedProducts}
+                    products={statistics?.mostAddedProducts}
                 />
 
                 <ProductList
                     title="Most Removed Products"
-                    products={statistics.mostRemovedProducts}
+                    products={statistics?.mostRemovedProducts}
                 />
                 <ExportReport statistics={statistics} products={products}/>
             </ScrollView>

@@ -100,12 +100,17 @@
       "solde": 80,
       "supplier": "Hcf",
       "image": "https://via.placeholder.com/150",
-      "editedBy": [],
+      "editedBy": [
+        {
+          "warehousemanId": "1333",
+          "at": "2025-02-17T16:14:34.964Z"
+        }
+      ],
       "stocks": [
         {
           "id": 1999,
           "name": "Gueliz B2",
-          "quantity": 0,
+          "quantity": 20,
           "localisation": {
             "city": "Marrakesh",
             "latitude": 31.628674,
