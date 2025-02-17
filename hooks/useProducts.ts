@@ -28,7 +28,7 @@ export const useProducts = () => {
   }, []);
 
   const restock = async (
-      productId: number,
+      productId: string,
       stockId: number,
       quantity: number,
       warehousemanId: number
@@ -61,16 +61,18 @@ export const useProducts = () => {
   };
 
   const unload = async (
-    productId: number,
-    stockId: number,
-    quantity: number
+      productId: string | undefined,
+      stockId: number,
+      quantity: number,
+      warehousemanId: number
   ) => {
     setLoading(true);
     try {
       const response = await productService.unloadProduct(
         productId,
         stockId,
-        quantity
+        quantity,
+        warehousemanId
       );
       if (response.error) {
         setError(response.error);

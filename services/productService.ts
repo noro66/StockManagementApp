@@ -60,117 +60,65 @@ class ProductService {
   }
 
   async updateStock(
-      payload: {
-        productId: string | number;
-        stockId: number;
-        quantity: number;
-        warehousemanId: number;
-      }
+      payload: { productId: string | undefined; stockId: number; quantity: number; warehousemanId: number }
   ): Promise<ApiResponse<Product>> {
     try {
       const { productId, stockId, quantity, warehousemanId } = payload;
 
       // Step 1: Fetch the current product data
-      const productResponse = await this.getProductById(productId.toString());
+      const productResponse = await this.getProductById(productId?.toString());
       if (productResponse.error || !productResponse.data || productResponse.data.length === 0) {
         throw new Error(productResponse.error || "Product not found");
       }
 
       const currentProduct = productResponse.data[0];
-      console.log("currentProduct:", JSON.stringify(currentProduct, null, 2),);
+      let updatedStocks = [...(currentProduct.stocks || [])];
 
-      // Step 2: Update the stock quantity
-      let updatedStocks = [...(currentProduct.stocks || [{
-        "id": 1999,
-        "name": "Gueliz B2",
-        "quantity": 0,
-        "localisation": {
-          "city": "Marrakesh",
-          "latitude": 31.628674,
-          "longitude": -7.992047
-        }
-      }])];
-      const stockIndex = updatedStocks.findIndex(
-          (stock) => stock.id === stockId
-      );
-      console.log("updatedStocks:", JSON.stringify(updatedStocks, null, 2),);
-
+      // Step 2: Find the stock to update
+      const stockIndex = updatedStocks.findIndex((stock) => stock.id === stockId);
       if (stockIndex === -1) {
-        // If the stock doesn't exist and we're trying to remove stock, throw an error
-        if (quantity < 0) {
-          throw new Error("Cannot remove stock from a non-existent location");
-        }
-
-        // Fetch warehouse data using the warehousemanId
-        const warehouseResponse = await api.get(
-            `/warehousemans/${warehousemanId}`
-        );
-        if (!warehouseResponse.data) {
-          throw new Error("Warehouse not found");
-        }
-
-        const warehouse = warehouseResponse.data;
-
-        // Add a new stock entry
-        updatedStocks.push({
-          id: stockId,
-          name: warehouse.name,
-          quantity: quantity,
-          localisation: {
-            city: warehouse.city,
-            latitude: warehouse.latitude || 0,
-            longitude: warehouse.longitude || 0,
-          },
-        });
-      } else {
-        // Update existing stock
-        const newQuantity = updatedStocks[stockIndex].quantity + quantity;
-        if (newQuantity < 0) {
-          throw new Error(
-              `Insufficient stock. Current: ${updatedStocks[stockIndex].quantity}`
-          );
-        }
-
-        updatedStocks[stockIndex] = {
-          ...updatedStocks[stockIndex],
-          quantity: newQuantity,
-        };
+        throw new Error("Stock not found");
       }
 
-      console.log("updatedStocks: should  be updated", JSON.stringify(updatedStocks, null, 2),);
-      // Step 3: Update the editedBy array
+      // Step 3: Update the stock quantity
+      const newQuantity = updatedStocks[stockIndex].quantity + quantity;
+      if (newQuantity < 0) {
+        throw new Error(`Insufficient stock. Current: ${updatedStocks[stockIndex].quantity}`);
+      }
+
+      updatedStocks[stockIndex] = {
+        ...updatedStocks[stockIndex],
+        quantity: newQuantity,
+      };
+
+      // Step 4: Update the editedBy array
       const updatedEditedBy = [
         ...(currentProduct.editedBy || []),
         {
           warehousemanId: warehousemanId,
-          at: new Date().toLocaleDateString(),
+          at: new Date().toISOString(), // Use ISO string for consistent date formatting
         },
       ];
-      console.log("updatedEditedBy:", JSON.stringify(updatedEditedBy, null, 2),);
 
-      // Step 4: Prepare the updated product object
+      // Step 5: Prepare the updated product object
       const updatedProduct = {
         ...currentProduct,
         stocks: updatedStocks,
         editedBy: updatedEditedBy,
       };
-      console.log("updatedProduct:", JSON.stringify(updatedProduct, null, 2),);
 
-      // Step 5: Send the entire updated product object to the server
-      console.log("Sending updated product:", JSON.stringify(updatedProduct, null, 2));
+      // Step 6: Send the entire updated product object to the server
       const response = await api.put<Product>(
           `/products/${productId}`,
-          updatedProduct // ✅ Send the entire updated product object
+          updatedProduct
       );
-      // console.log("API Response:", JSON.stringify(response.data, null, 2));
 
       return { data: response.data };
     } catch (error) {
-      console.error("Error updating stock:", error.response?.data || error.message);
+      console.error("Error updating stock:", error?.response?.data || error?.message);
       return {
         data: {} as Product,
-        error:
-            error instanceof Error ? error.message : "Failed to update stock",
+        error: error instanceof Error ? error.message : "Failed to update stock",
       };
     }
   }
@@ -267,10 +215,10 @@ class ProductService {
    * Handle product unload
    */
   async unloadProduct(
-    productId: string | number,
-    stockId: number,
-    quantity: number,
-    warehousemanId: number
+      productId: number,
+      stockId: number,
+      quantity: number,
+      warehousemanId: number
   ): Promise<ApiResponse<Product>> {
     if (quantity <= 0) {
       return {
@@ -279,14 +227,14 @@ class ProductService {
       };
     }
 
+    // Ensure the quantity is negative for unloading
     return this.updateStock({
       productId,
       stockId,
-      quantity: -Math.abs(quantity),
+      quantity: -quantity, // Negative quantity for unloading
       warehousemanId,
     });
   }
-
   /**
    * Add a new product
    */

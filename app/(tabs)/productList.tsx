@@ -5,7 +5,7 @@ import { SortButtons } from "@/components/ProductList/SortButtons";
 import { ProductCard } from "@/components/ProductList/ProductCard";
 import { RestockModal } from "@/components/ProductList/RestockModal";
 import { Product, SortKey, SortOrder } from "@/types/product.types";
-import { sortProducts } from "@/utils/productUtils";
+import {getTotalQuantity, sortProducts} from "@/utils/productUtils";
 import { styles } from "@/components/ProductList/styles";
 import { useProducts } from "@/hooks/useProducts";
 import {AuthService} from "@/services/authService";
@@ -17,7 +17,7 @@ const ProductList: React.FC = () => {
   const [sortKey, setSortKey] = useState<SortKey>("name");
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [isRestockModalVisible, setRestockModalVisible] = useState(false);
+  const [isModalVisible, setModalVisible] = useState(false);
   const [Amount, setAmount] = useState("");
   const [mode, setMode] = useState<string>("restock");
 
@@ -71,7 +71,7 @@ const ProductList: React.FC = () => {
             quantity,
             user.id
         );
-        setRestockModalVisible(false);
+        setModalVisible(false);
         setAmount("");
         refreshProducts();
       } catch (error) {
@@ -81,19 +81,38 @@ const ProductList: React.FC = () => {
     }
   };
 
-  const handleUnload = (product: Product) => {
-    Alert.prompt("Unload Units", "Enter number of units to remove:", [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Confirm",
-        onPress: async (amount) => {
-          if (amount) {
-            await unload(product.id, product.stocks.id, parseInt(amount));
-            refreshProducts();
-          }
-        },
-      },
-    ]);
+  const handleUnload = async () => {
+    if (selectedProduct && Amount) {
+      const user = await AuthService.getCurrentUser();
+      if (!user) {
+        Alert.alert("Error", "You must be logged in to modify stock.");
+        return;
+      }
+
+      const stockQuantity = getTotalQuantity(selectedProduct);
+      let quantity = parseInt(Amount);
+      if (isNaN(quantity)) {
+        Alert.alert("Error", "Please enter a valid number.");
+        return;
+      }
+      if (stockQuantity < quantity) {
+        Alert.alert("Error", "You don't have enough units to unload.");
+        return;
+      }
+      if (quantity <= 0) {
+        Alert.alert("Error", "Quantity must be greater than 0.");
+        return;
+      }
+
+      try {
+        await unload(selectedProduct?.id, 1999, quantity, user.id);
+        setModalVisible(false);
+        setAmount("");
+        refreshProducts();
+      } catch (error) {
+        Alert.alert("Error", error?.message || `Failed to unload stock.`);
+      }
+    }
   };
 
   return (
@@ -114,12 +133,12 @@ const ProductList: React.FC = () => {
             onRestock={() => {
               setMode("restock");
               setSelectedProduct(item);
-              setRestockModalVisible(true);
+              setModalVisible(true);
             }}
             onUnload={() => {
               setMode("unload");
               setSelectedProduct(item);
-              setRestockModalVisible(true);
+              setModalVisible(true);
             }}
           />
         )}
@@ -130,12 +149,12 @@ const ProductList: React.FC = () => {
       />
 
       <RestockModal
-        visible={isRestockModalVisible}
+        visible={isModalVisible}
         amount={Amount}
         onChangeAmount={setAmount}
         onConfirm={()=> mode  === "restock" ? handleRestock() : handleUnload()}
         onCancel={() => {
-          setRestockModalVisible(false);
+          setModalVisible(false);
           setAmount("");
         }}
         mode={mode}
