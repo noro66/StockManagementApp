@@ -19,20 +19,25 @@ export class AuthService {
         params: { secretKey },
       });
 
-      if (response.data.error || !response.data) {
-        throw new Error(response.data.error || "Invalid credentials");
+      if (!response.data || response.data.length !== 1) {
+        throw new Error("Invalid credentials");
       }
-      const warehouseman: Warehouseman = response.data;
+      const warehouseman: Warehouseman = response.data[0];
       await this.saveUserToStorage(warehouseman);
       return warehouseman;
     } catch (error) {
-      throw new Error("Authentication failed");
+      throw new Error(
+        axios.isAxiosError(error) && error.response
+          ? error.response.data?.message || "Authentication failed"
+          : "Authentication failed"
+      );
     }
   }
 
   static async logout(): Promise<void> {
     try {
       await AsyncStorage.removeItem(AUTH_STORAGE_KEY);
+      console.log("User logged out successfully.");
     } catch (error) {
       console.error("Logout error:", error);
       throw new Error("Logout failed");
@@ -42,6 +47,7 @@ export class AuthService {
   static async getCurrentUser(): Promise<Warehouseman | null> {
     try {
       const userJson = await AsyncStorage.getItem(AUTH_STORAGE_KEY);
+
       return userJson ? JSON.parse(userJson) : null;
     } catch (error) {
       return null;

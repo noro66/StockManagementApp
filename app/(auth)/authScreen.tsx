@@ -6,13 +6,11 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Alert,
-  KeyboardAvoidingView,
-  Platform,
   StyleSheet,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import { AuthService } from "../../services/authService";
-import { Warehouseman } from "../../types/auth.types";
+import { AuthService } from "@/services/authService";
+import { Warehouseman } from "@/types/auth.types";
 
 interface AuthScreenProps {
   onAuthSuccess: (user: Warehouseman) => void;
@@ -27,24 +25,19 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
       Alert.alert("Error", "Please enter your secret key");
       return;
     }
-
     setLoading(true);
     try {
       const user = await AuthService.login(secretKey);
-
-      onAuthSuccess(user);
+      onAuthSuccess(user); // This triggers the callback passed from parent
     } catch (error) {
-      Alert.alert("Error", (error as Error).message);
+      Alert.alert("Error", error?.message);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={styles.container}
-    >
+    <View style={styles.container}>
       <StatusBar style="dark" />
       <View style={styles.form}>
         <Text style={styles.title}>Warehouse Management</Text>
@@ -73,7 +66,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
           )}
         </TouchableOpacity>
       </View>
-    </KeyboardAvoidingView>
+    </View>
   );
 };
 
@@ -133,4 +126,5 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
 });
+
 export default AuthScreen;

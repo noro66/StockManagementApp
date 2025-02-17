@@ -1,13 +1,34 @@
-import { Stack } from "expo-router";
-import { ThemeProvider, DefaultTheme } from "@react-navigation/native";
+import { router, Stack, usePathname } from "expo-router";
+import { useEffect } from "react";
+import { AuthService } from "@/services/authService";
+
 
 export default function RootLayout() {
-  return (
+  const pathname = usePathname();
 
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(auth)" />
-        <Stack.Screen name="(tabs)" />
-      </Stack>
-    // </ThemeProvider>
+  useEffect(() => {
+    if (pathname.startsWith("/(tabs)")) {
+      checkAuthAndRedirect();
+    }
+  }, [pathname]);
+
+  const checkAuthAndRedirect = async () => {
+    const user = await AuthService.getCurrentUser();
+    if (!user) {
+      router.replace("/(auth)/authScreen");
+    }
+  };
+
+  return (
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="index" />
+      <Stack.Screen name="(auth)" />
+      <Stack.Screen
+        name="(tabs)"
+        options={{
+          gestureEnabled: false,
+        }}
+      />
+    </Stack>
   );
 }

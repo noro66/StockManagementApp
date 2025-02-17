@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { View, ActivityIndicator, StyleSheet } from "react-native";
 import AuthScreen from "./(auth)/authScreen";
-import ProductList from "./(tabs)/productList";
 import { AuthService } from "../services/authService";
 import { Warehouseman } from "../types/auth.types";
-import { Redirect } from "expo-router";
+import { useRouter } from "expo-router"; // Use useRouter for navigation
 
 export default function Index() {
   const [user, setUser] = useState<Warehouseman | null>(null);
   const [loading, setLoading] = useState(true);
+  const router = useRouter(); // Add this to handle navigation
 
   useEffect(() => {
     checkAuthentication();
@@ -17,13 +17,23 @@ export default function Index() {
   const checkAuthentication = async () => {
     try {
       const authenticatedUser = await AuthService.getCurrentUser();
-      setUser(authenticatedUser);
+      setUser(authenticatedUser ?? null);
     } catch (error) {
       console.error("Authentication check failed:", error);
     } finally {
       setLoading(false);
     }
   };
+
+  const handleAuthSuccess = (user: Warehouseman) => {
+    setUser(user);
+  };
+
+  useEffect(() => {
+    if (user) {
+      router.push("/(tabs)/productList"); // Redirect to productList after login
+    }
+  }, [user]);
 
   if (loading) {
     return (
@@ -34,10 +44,10 @@ export default function Index() {
   }
 
   if (!user) {
-    return <AuthScreen onAuthSuccess={setUser} />;
+    return <AuthScreen onAuthSuccess={handleAuthSuccess} />;
   }
 
-  return <Redirect href="/(tabs)/productList" />;
+  return null;
 }
 
 const styles = StyleSheet.create({

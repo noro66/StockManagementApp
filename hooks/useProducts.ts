@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { Product } from "../types/product.types";
-import { productService } from "../services/productService";
+import { Product } from "@/types/product.types";
+import { productService } from "@/services/productService";
 
 export const useProducts = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -28,30 +28,32 @@ export const useProducts = () => {
   }, []);
 
   const restock = async (
-    productId: number,
-    stockId: number,
-    quantity: number
+      productId: number,
+      stockId: number,
+      quantity: number,
+      warehousemanId: number
   ) => {
     setLoading(true);
     try {
       const response = await productService.restockProduct(
-        productId,
-        stockId,
-        quantity
+          productId,
+          stockId,
+          quantity,
+          warehousemanId
       );
       if (response.error) {
         setError(response.error);
       } else {
-        // Update the local products state
+        // @ts-ignore
         setProducts((prevProducts) =>
-          prevProducts.map((product) =>
-            product.id === productId ? response.data : product
-          )
+            prevProducts.map((product) =>
+                product.id === productId ? response.data : product
+            )
         );
       }
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Failed to restock product"
+          err instanceof Error ? err.message : "Failed to restock product"
       );
     } finally {
       setLoading(false);
