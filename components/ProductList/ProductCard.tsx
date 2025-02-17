@@ -78,10 +78,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             <Text style={styles.buttonText}>Restock</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.actionButton, styles.unloadButton]}
+            style={[styles.actionButton, styles.unloadButton, { opacity: quantity <= 0 ? 0.5 : 1 }]}
             onPress={() => onUnload(product)}
             accessibilityRole="button"
             accessibilityLabel="Unload product"
+            disabled={quantity <= 0}
+
           >
             <Text style={styles.buttonText}>Unload</Text>
           </TouchableOpacity>

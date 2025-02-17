@@ -18,8 +18,8 @@ const ProductList: React.FC = () => {
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isRestockModalVisible, setRestockModalVisible] = useState(false);
-  const [restockAmount, setRestockAmount] = useState("");
-
+  const [Amount, setAmount] = useState("");
+  const [mode, setMode] = useState<string>("restock");
 
   const filteredAndSortedProducts = () => {
     let filtered = products.filter((product) => {
@@ -44,7 +44,7 @@ const ProductList: React.FC = () => {
     }
   };
   const handleRestock = async () => {
-    if (selectedProduct && restockAmount) {
+    if (selectedProduct && Amount) {
       const user = await AuthService.getCurrentUser();
       if (!user) {
         Alert.alert("Error", "You must be logged in to restock products.");
@@ -53,7 +53,7 @@ const ProductList: React.FC = () => {
 
       const stockId = selectedProduct.stocks[0]?.id ?? 1999;
 
-      const quantity = parseInt(restockAmount);
+      const quantity = parseInt(Amount);
       if (isNaN(quantity)) {
         Alert.alert("Error", "Please enter a valid number.");
         return;
@@ -72,7 +72,7 @@ const ProductList: React.FC = () => {
             user.id
         );
         setRestockModalVisible(false);
-        setRestockAmount("");
+        setAmount("");
         refreshProducts();
       } catch (error) {
         // @ts-ignore
@@ -112,10 +112,15 @@ const ProductList: React.FC = () => {
           <ProductCard
             product={item}
             onRestock={() => {
+              setMode("restock");
               setSelectedProduct(item);
               setRestockModalVisible(true);
             }}
-            onUnload={() => handleUnload(item)}
+            onUnload={() => {
+              setMode("unload");
+              setSelectedProduct(item);
+              setRestockModalVisible(true);
+            }}
           />
         )}
         keyExtractor={(item) => item.id.toString()}
@@ -126,13 +131,14 @@ const ProductList: React.FC = () => {
 
       <RestockModal
         visible={isRestockModalVisible}
-        amount={restockAmount}
-        onChangeAmount={setRestockAmount}
-        onConfirm={handleRestock}
+        amount={Amount}
+        onChangeAmount={setAmount}
+        onConfirm={()=> mode  === "restock" ? handleRestock : handleUnload}
         onCancel={() => {
           setRestockModalVisible(false);
-          setRestockAmount("");
+          setAmount("");
         }}
+        mode={mode}
       />
     </View>
   );

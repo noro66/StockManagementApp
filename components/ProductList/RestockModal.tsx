@@ -8,6 +8,7 @@ interface RestockModalProps {
   onChangeAmount: (amount: string) => void;
   onConfirm: () => void;
   onCancel: () => void;
+  mode: string,
 }
 
 export const RestockModal: React.FC<RestockModalProps> = ({
@@ -16,11 +17,12 @@ export const RestockModal: React.FC<RestockModalProps> = ({
   onChangeAmount,
   onConfirm,
   onCancel,
+  mode,
 }) => (
   <Modal visible={visible} transparent animationType="slide">
     <View style={styles.modalContainer}>
       <View style={styles.modalContent}>
-        <Text style={styles.modalTitle}>Restock Product</Text>
+        <Text style={styles.modalTitle}>{mode.charAt(0).toUpperCase() + mode.slice(1)} Product</Text>
         <TextInput
           style={styles.modalInput}
           placeholder="Enter quantity"
