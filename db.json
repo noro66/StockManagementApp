@@ -13,7 +13,7 @@
         {
           "id": 1999,
           "name": "Gueliz B2",
-          "quantity": 21,
+          "quantity": 0,
           "localisation": {
             "city": "Marrakesh",
             "latitude": 31.628674,
@@ -23,7 +23,7 @@
         {
           "id": 2991,
           "name": "Lazari H2",
-          "quantity": 24,
+          "quantity": 0,
           "localisation": {
             "city": "Oujda",
             "latitude": 34.689404,
@@ -35,6 +35,18 @@
         {
           "warehousemanId": 1333,
           "at": "2025-02-02"
+        },
+        {
+          "warehousemanId": 1333,
+          "at": "2025-02-17T04:28:01.880Z"
+        },
+        {
+          "warehousemanId": 1333,
+          "at": "2025-02-17T04:28:18.605Z"
+        },
+        {
+          "warehousemanId": 1333,
+          "at": "2025-02-17T04:51:28.335Z"
         }
       ]
     },
@@ -50,7 +62,7 @@
         {
           "id": 1999,
           "name": "Gueliz B2",
-          "quantity": 30,
+          "quantity": 0,
           "localisation": {
             "city": "Marrakesh",
             "latitude": 31.628674,
@@ -60,7 +72,7 @@
         {
           "id": 2991,
           "name": "Lazari H2",
-          "quantity": 5,
+          "quantity": 0,
           "localisation": {
             "city": "Oujda",
             "latitude": 34.689404,
@@ -88,6 +100,10 @@
         {
           "warehousemanId": 1333,
           "at": "2025-02-17T04:27:21.511Z"
+        },
+        {
+          "warehousemanId": 1333,
+          "at": "2025-02-17T04:51:16.259Z"
         }
       ]
     },
@@ -119,6 +135,14 @@
         {
           "warehousemanId": 1333,
           "at": "2/17/2025"
+        },
+        {
+          "warehousemanId": 1333,
+          "at": "2025-02-17T04:51:35.608Z"
+        },
+        {
+          "warehousemanId": 1333,
+          "at": "2025-02-17T04:51:42.266Z"
         }
       ]
     }

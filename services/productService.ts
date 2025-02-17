@@ -75,21 +75,30 @@ class ProductService {
       let updatedStocks = [...(currentProduct.stocks || [])];
 
       // Step 2: Find the stock to update
-      const stockIndex = updatedStocks.findIndex((stock) => stock.id === stockId);
-      if (stockIndex === -1) {
-        throw new Error("Stock not found");
-      }
+      let stockIndex = 0 //updatedStocks.findIndex((stock) => stock.id === stockId);
+      if(quantity < 0){
+        let quantityBuff = Math.abs(quantity);
+        // Step 3: Update the stock quantity
+        while (quantityBuff > 0 && stockIndex < updatedStocks.length) {
+          const stock = updatedStocks[stockIndex];
 
-      // Step 3: Update the stock quantity
-      const newQuantity = updatedStocks[stockIndex].quantity + quantity;
-      if (newQuantity < 0) {
-        throw new Error(`Insufficient stock. Current: ${updatedStocks[stockIndex].quantity}`);
+          if (stock.quantity > 0) {
+            const quantityToReduce = Math.min(stock.quantity, quantityBuff);
+            stock.quantity -= quantityToReduce;
+            quantityBuff -= quantityToReduce;
+          }
+          stockIndex++; // Move to the next stock
+        }
+        // Check if the entire quantity was unloaded
+        if (quantityBuff > 0) {
+          throw new Error(`Insufficient stock. Could not unload full quantity. Remaining: ${quantityBuff}`);
+        }
+      }else{
+        updatedStocks[stockIndex] = {
+          ...updatedStocks[stockIndex],
+          quantity: updatedStocks[stockIndex].quantity + quantity,
+        };
       }
-
-      updatedStocks[stockIndex] = {
-        ...updatedStocks[stockIndex],
-        quantity: newQuantity,
-      };
 
       // Step 4: Update the editedBy array
       const updatedEditedBy = [
