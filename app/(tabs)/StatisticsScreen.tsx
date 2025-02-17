@@ -5,6 +5,7 @@ import { Card } from '@rneui/themed';
 import { Ionicons } from '@expo/vector-icons';
 import { useProducts } from "@/hooks/useProducts";
 import {getTotalQuantity} from "@/utils/productUtils";
+import ExportReport from "@/components/ProductList/ExportReport";
 
 interface Product {
     id: string;
@@ -132,6 +133,7 @@ const StatisticsScreen: React.FC = () => {
                     title="Most Removed Products"
                     products={statistics.mostRemovedProducts}
                 />
+                <ExportReport statistics={statistics} products={products}/>
             </ScrollView>
         </SafeAreaView>
     );
