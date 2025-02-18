@@ -15,7 +15,6 @@ import {
   Image
 } from "react-native";
 import { productService } from "@/services/productService";
-import { Product } from "../../types/product.types";
 import { router } from "expo-router";
 import ProductScanner from "@/components/ProductList/ProductScanner";
 import {Ionicons} from "@expo/vector-icons";  // Ensure the correct import path
@@ -76,6 +75,17 @@ const AddProductScreen = () => {
 
   const handleBarcodeScanned = async (scanData: { type: string; data: string }) => {
     try {
+      const barcode = scanData.data;
+      fetch(`https://api.upcitemdb.com/prod/trial/lookup?upc=${barcode}`)
+          .then(response => response.json())
+          .then(data => {
+            setName(data["items"][0]?.title);
+            setType(data["items"][0]?.category.split(">")[0]);
+            setPrice(data["items"][0]?.offers[0]?.price)
+            setImage(data["items"][0]?.images[0]);
+            setSupplier(data["items"][0]?.brand);
+          })
+          .catch(error => console.log(error));
       const response = await productService.getProductByBarcode(scanData.data);
       if (response.data?.length == 0) {
         console.log("barcode scanned should be printed");
@@ -107,7 +117,7 @@ const AddProductScreen = () => {
               placeholderTextColor="#999"
               {...props}
           />
-          {props.rightIcon && props.rightIcon} {/* Add this line */}
+          {props.rightIcon && props.rightIcon}
         </View>
       </View>
   );
